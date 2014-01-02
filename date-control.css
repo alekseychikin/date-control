@@ -1,0 +1,136 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+.date-control {
+	position: relative;
+	font-family: 'Tahoma', sans-serif;
+	font-size: 12px;
+	line-height: 1.6;
+}
+.date-control_wrap {
+	width: 320px;
+	height: 310px;
+	box-shadow: 0 5px 20px #717171;
+	padding-top: 10px;
+}
+.date-control_dates_data_table {
+	width: 180px;
+	border-collapse: collapse;
+}
+.date-control_dates_data_table td {
+	text-align: right;
+	padding: 0;
+	margin: 0;
+}
+.date-control_holiday {
+	color: #DB3037;
+}
+.date-control_month_label {
+	font-weight: bold;
+	font-size: 11px;
+	margin-left: 11px;
+	margin-top: 10px;
+}
+.date-control_days-of-week {	
+	margin-left: 10px;
+}
+.date-control_days-of-week td {
+	text-align: center;
+}
+.date-control_dates,
+.date-control_months,
+.date-control_years {
+	float: left;
+	box-shadow: inset 1px 2px 5px #a8a8a8;
+	border-radius: 3px;
+}
+.date-control_months,
+.date-control_years {
+	background-color: #EEEEEE;
+	width: 66px;
+	height: 278px;
+	/*overflow: hidden;*/
+	position: relative;
+	color: #666;
+}
+.date-control_years {
+	width: 48px;
+}
+.control_months_scroll,
+.control_years_scroll {
+	width: 96px;
+	overflow: scroll;
+	position: relative;
+}
+.date-control_dates {
+	width: 195px;
+	height: 278px;
+	overflow: hidden;
+	position: relative;
+	margin-left: 5px;
+}
+.date-control_months_list,
+.date-control_years_list {
+	list-style: none;
+	margin: 4px 0 0;
+	padding: 0;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 200;
+}
+.date-control_dates_scroll {
+	width: 235px;
+	height: 278px;
+	overflow-y: scroll;
+	position: relative;
+}
+.date-control_plane {
+	margin-top: 1px;
+	top: 0;
+	left: 0;
+	width: 65px;
+	background: #fff;
+	background: linear-gradient(to bottom, #ffffff 0%,#ffffff 50%,#efefef 51%,#f6f6f6 76%,#ffffff 100%);
+	position: absolute;
+	z-index: 199;
+	border-radius: 2px;
+	box-shadow: 0 1px 1px #929292;
+}
+.date-control_months_list li,
+.date-control_years_list li {
+	height: 23px;
+	margin-left: 7px;
+}
+.date-control_month_plane {
+	height: 45px;
+}
+.date-control_year_plane {
+	width: 47px;
+	height: 25px;
+}
+.date-control_months_scroll_wrap,
+.date-control_years_scroll_wrap {
+	width: 66px;
+	position: relative;
+	overflow: hidden;
+	height: 278px;
+	z-index: 203;
+}
+.date-control_months_scroll,
+.date-control_years_scroll {
+	position: absolute;
+	z-index: 205;
+	left: 0;
+	top: 0;
+	width: 106px;
+	height: 278px;
+	overflow-y: scroll;
+}
+.date-control_month {
+	height: 130px;
+}
+.date-control_month_label_drop-down {
+	margin-bottom: -18px;
+}
