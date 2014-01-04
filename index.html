@@ -4,80 +4,56 @@
 	<meta charset="UTF-8">
 	<title>Date control</title>
 	<link rel="stylesheet" type="text/css" href="date-control.css" media="all" />
+	<style type="text/css">
+		.date-control {
+			display: none;
+			position: absolute;
+			left: 0;
+			top: 20px;
+		}
+		.date-item {
+			display: inline;
+			position: relative;
+		}
+		.open-date-control {
+			position: absolute;
+			width: 21px;
+			height: 16px;
+			background: url('calendar.gif') 0 0 no-repeat;
+			display: block;
+			top: 5px;
+			right: 7px;
+		}
+	</style>
 </head>
 <body>
-<label for="date-control">The idea of this control was spied from <a href="http://artgorbunov.ru/bb/soviet/20070628/">buro</a>.</label>
-<div class="date-control">
-	<input type="text" name="date-control" id="date-control" />
-	<div class="date-control_wrap">
-		<table class="date-control_dates_data_table date-control_days-of-week">
-			<tr>
-				<td>П</td>
-				<td>В</td>
-				<td>С</td>
-				<td>Ч</td>
-				<td>П</td>
-				<td class="date-control_holiday">С</td>
-				<td class="date-control_holiday">В</td>
-			</tr>
-		</table>
-		<div class="date-control_dates">
-			<div class="date-control_dates_scroll">
-				<div class="date-control_dates_data"></div>
-			</div>
-		</div>
-		<div class="date-control_months">
-			<div class="date-control_plane date-control_month_plane"></div>
-			<ul class="date-control_months_list">
-				<li>январь</li>
-				<li>февраль</li>
-				<li>март</li>
-				<li>апрель</li>
-				<li>май</li>
-				<li>июнь</li>
-				<li>июль</li>
-				<li>август</li>
-				<li>сентябрь</li>
-				<li>октябрь</li>
-				<li>ноябрь</li>
-				<li>декабрь</li>
-			</ul>
-			<div class="date-control_months_scroll_wrap">
-				<div class="date-control_months_scroll">
-					<div class="date-control_months_scroll_sweep">
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="date-control_years">
-			<div class="date-control_plane date-control_year_plane"></div>
-			<ul class="date-control_years_list">
-				<li>2003</li>
-				<li>2004</li>
-				<li>2005</li>
-				<li>2006</li>
-				<li>2007</li>
-				<li>2008</li>
-				<li>2009</li>
-				<li>2010</li>
-				<li>2011</li>
-				<li>2012</li>
-				<li>2013</li>
-				<li>2014</li>
-			</ul>
-			<div class="date-control_years_scroll_wrap">
-				<div class="date-control_years_scroll">
-					<div class="date-control_years_scroll_sweep">
-					</div>
-				</div>
-			</div>
-		</div>
+<p><label for="date-from">The idea of this control was spied from <a href="http://artgorbunov.ru/bb/soviet/20070628/">buro</a>.</label></p>
+<div>
+	<div class="date-item">
+		<input type="text" name="date-control-from" id="date-from" class="input-date-control" value="20 ноября 2013" />
+		<a href="#" class="open-date-control"></a>
+	</div>
+	<span>—</span>
+	<div class="date-item">
+		<input type="text" name="date-control-to" id="date-to" class="input-date-control" value="10 января 2013" />
+		<a href="#" class="open-date-control"></a>
 	</div>
 </div>
 <script type="text/javascript" src="jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="jquery.date-control.js"></script>
 <script type="text/javascript">
-	$('#date-control').dateControl();
+	$('.input-date-control').dateControl({changeDate: function ()
+		{
+			$(this).siblings('.date-control').hide();
+		}
+	});
+	$('.open-date-control').on('click', function (e)
+	{
+		var $dateControl = $(this).siblings('.date-control');
+		$('.date-control').not($dateControl).hide();
+		$dateControl.toggle();
+		e.preventDefault();
+	});
 </script>
 </body>
 </html>

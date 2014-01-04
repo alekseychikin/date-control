@@ -1,12 +1,10 @@
-* {
-	margin: 0;
-	padding: 0;
-}
 .date-control {
 	position: relative;
 	font-family: 'Tahoma', sans-serif;
 	font-size: 12px;
 	line-height: 1.6;
+	background-color: #fff;
+	z-index: 200;
 }
 .date-control_wrap {
 	width: 320px;
@@ -16,15 +14,23 @@
 }
 .date-control_dates_data_table {
 	width: 180px;
-	border-collapse: collapse;
+	/*border-collapse: collapse;*/
 }
-.date-control_dates_data_table td {
+.date-control_date {
 	text-align: right;
-	padding: 0;
-	margin: 0;
+	padding: 0 4px;
+	cursor: pointer;
+}
+.date-control_date:hover {
+	background: #FFAB84;
+	background: linear-gradient(to bottom, #ffeea2 0%,#ffe399 25%,#ffc385 50%,#ff9b6a 75%,#ff8a5e 100%);
 }
 .date-control_holiday {
 	color: #DB3037;
+}
+.date-control_select-day {
+	background: #FFAB84;
+	background: linear-gradient(to bottom, #ffeea2 0%,#ffe399 25%,#ffc385 50%,#ff9b6a 75%,#ff8a5e 100%);
 }
 .date-control_month_label {
 	font-weight: bold;
@@ -118,6 +124,9 @@
 	height: 278px;
 	z-index: 203;
 }
+.date-control_years_scroll_wrap {
+	width: 48px;
+}
 .date-control_months_scroll,
 .date-control_years_scroll {
 	position: absolute;
@@ -127,6 +136,10 @@
 	width: 106px;
 	height: 278px;
 	overflow-y: scroll;
+}
+.date-control_months_scroll_sweep,
+.date-control_years_scroll_sweep {
+	cursor: pointer;
 }
 .date-control_month {
 	height: 130px;
