@@ -2,6 +2,7 @@ date-control
 ============
 
 Сделан по мотивам календаря из [советов в Бюро](http://artgorbunov.ru/bb/soviet/20070628/).
+[https://makingoff.github.io/date-control/](https://makingoff.github.io/date-control/)
 
 ## Пока
 
