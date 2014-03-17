@@ -12,6 +12,9 @@
 	box-shadow: 0 5px 20px #717171;
 	padding-top: 10px;
 }
+.date-control_dates_data {
+	position: relative;
+}
 .date-control_dates_data_table {
 	width: 180px;
 	/*border-collapse: collapse;*/
@@ -69,6 +72,10 @@
 	overflow: scroll;
 	position: relative;
 }
+.date-touch-version .control_months_scroll,
+.date-touch-version .control_years_scroll {
+	overflow: hidden;
+}
 .date-control_dates {
 	width: 195px;
 	height: 278px;
@@ -91,6 +98,9 @@
 	height: 278px;
 	overflow-y: scroll;
 	position: relative;
+}
+.date-touch-version .date-control_dates_scroll {
+	overflow-y: hidden;
 }
 .date-control_plane {
 	margin-top: 1px;

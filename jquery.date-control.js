@@ -1,46 +1,114 @@
 (function ($)
 {
 	var _template =
-		'<div class="date-control">' +
-			'<div class="date-control_wrap">' +
-				'<table class="date-control_dates_data_table date-control_days-of-week">' +
-					'<tr>' +
-						'<td>П</td>' +
-						'<td>В</td>' +
-						'<td>С</td>' +
-						'<td>Ч</td>' +
-						'<td>П</td>' +
-						'<td class="date-control_holiday">С</td>' +
-						'<td class="date-control_holiday">В</td>' +
-					'</tr>' +
-				'</table>' +
-				'<div class="date-control_dates">' +
-					'<div class="date-control_dates_scroll">' +
-						'<div class="date-control_dates_data"></div>' +
+			'<div class="date-control">' +
+				'<div class="date-control_wrap">' +
+					'<table class="date-control_dates_data_table date-control_days-of-week">' +
+						'<tr>' +
+							'<td>П</td>' +
+							'<td>В</td>' +
+							'<td>С</td>' +
+							'<td>Ч</td>' +
+							'<td>П</td>' +
+							'<td class="date-control_holiday">С</td>' +
+							'<td class="date-control_holiday">В</td>' +
+						'</tr>' +
+					'</table>' +
+					'<div class="date-control_dates">' +
+						'<div class="date-control_dates_scroll">' +
+							'<div class="date-control_dates_data"></div>' +
+						'</div>' +
 					'</div>' +
-				'</div>' +
-				'<div class="date-control_months">' +
-					'<div class="date-control_plane date-control_month_plane"></div>' +
-					'<ul class="date-control_months_list">' +
-					'</ul>' +
-					'<div class="date-control_months_scroll_wrap">' +
-						'<div class="date-control_months_scroll">' +
-							'<div class="date-control_months_scroll_sweep"></div>' +
+					'<div class="date-control_months">' +
+						'<div class="date-control_plane date-control_month_plane"></div>' +
+						'<ul class="date-control_months_list">' +
+						'</ul>' +
+						'<div class="date-control_months_scroll_wrap">' +
+							'<div class="date-control_months_scroll" data-plane="month_plane">' +
+								'<div class="date-control_months_scroll_sweep"></div>' +
+							'</div>' +
+						'</div>' +
+					'</div>' +
+					'<div class="date-control_years">' +
+						'<div class="date-control_plane date-control_year_plane"></div>' +
+						'<ul class="date-control_years_list">' +
+						'</ul>' +
+						'<div class="date-control_years_scroll_wrap">' +
+							'<div class="date-control_years_scroll" data-plane="year_plane">' +
+								'<div class="date-control_years_scroll_sweep"></div>' +
+							'</div>' +
 						'</div>' +
 					'</div>' +
 				'</div>' +
-				'<div class="date-control_years">' +
-					'<div class="date-control_plane date-control_year_plane"></div>' +
-					'<ul class="date-control_years_list">' +
-					'</ul>' +
-					'<div class="date-control_years_scroll_wrap">' +
-						'<div class="date-control_years_scroll">' +
-							'<div class="date-control_years_scroll_sweep"></div>' +
-						'</div>' +
-					'</div>' +
-				'</div>' +
-			'</div>' +
-		'</div>';
+			'</div>',
+			supportsTransitions = (function ()
+			{
+		    var b = document.body || document.documentElement,
+		        s = b.style,
+		        p = 'transition',
+			      v;
+		    if(typeof s[p] == 'string') {return true; }
+
+		    // Tests for vendor specific prop
+		    v = ['Moz', 'webkit', 'Webkit', 'Khtml', 'O', 'ms'];
+		    p = p.charAt(0).toUpperCase() + p.substr(1);
+		    for (var i = 0; i < v.length; i++) {
+		      if (typeof s[v[i] + p] == 'string') {
+			      return true;
+		      }
+		    }
+		    return false;
+			})(),
+			isTouchDevice = !!('ontouchstart' in window),
+			setScrollTop,
+			getScrollTop,
+			setTop;
+	if (isTouchDevice) {
+		if (supportsTransitions) {
+			setTop = function ($element, value)
+			{
+// transform: translate3d(top, left, rotate)
+// transition: transform 0s lenear;
+				$element.css({
+					'-webkit-transform': 'translate3d(0,' + value + 'px,0)',
+					   '-moz-transform': 'translate3d(0,' + value + 'px,0)',
+					    '-ms-transform': 'translate3d(0,' + value + 'px,0)',
+					     '-o-transform': 'translate3d(0,' + value + 'px,0)',
+					        'transform': 'translate3d(0,' + value + 'px,0)',
+					'-webkit-transition': '-webkit-transform 2s lenear',
+					   '-moz-transition': '-moz-transform 2s lenear',
+					    '-ms-transition': '-ms-transform 2s lenear',
+					     '-o-transition': '-o-transform 2s lenear',
+					        'transition': 'transform 2s lenear'
+				});
+			};
+		}
+		else {
+			setTop = function ($element, value)
+			{
+				$element.css({top: value + 'px'});
+			}
+		}
+		setScrollTop = function (cacheElements, $element, value)
+		{
+			$element = cacheElements[$element.data('plane')];
+		};
+		getScrollTop = function ($element)
+		{
+			console.log($element);
+			return 0;
+		};
+	}
+	else {
+		setScrollTop = function (cacheElements, $element, value)
+		{
+			$element.scrollTop(value);
+		};
+		getScrollTop = function ($element)
+		{
+			return $element.scrollTop();
+		};
+	}
 	$.fn.dateControl = function (params)
 	{
 		params = params || {};
@@ -63,7 +131,11 @@
 					yearsArr = [2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
 					$monthsList = $this.find('.date-control_months_list'),
 					$yearsList = $this.find('.date-control_years_list'),
-					isScrollInit = false;
+					isScrollInit = false,
+					cacheElements;
+			if (isTouchDevice) {
+				$this.addClass('date-touch-version');
+			}
 			for (i = 0, max = monthsArr.length; i < max; i += 1) {
 				$monthsList.append('<li>' + monthsArr[i] + '</li>')
 			}
@@ -88,7 +160,6 @@
 					$yearScroll = $this.find('.date-control_years_scroll'),
 					$yearScrollSweep = $this.find('.date-control_years_scroll_sweep'),
 					$yearPlane = $this.find('.date-control_year_plane'),
-
 					year = parseInt(value[2], 10),
 					month = value[1],
 					day = parseInt(value[0], 10),
@@ -110,19 +181,7 @@
 							return months[isLeapYear(year) ? 'l' : 'r'][month];
 						}
 					})(),
-					scrollInit = function ()
-					{
-						isScrollInit = true;
-						var fullFactor = 1 / 10,
-								halfFactor = fullFactor / 2,
-								factor = month * fullFactor - halfFactor,
-								scrollTop = $monthScrollSweep.data('height') * factor;
-						$monthScroll.scrollTop(scrollTop);
-						fullFactor = 1 / 11;
-						factor = yearsArr.indexOf(year) * fullFactor;
-						scrollTop = $yearScrollSweep.data('height') * factor;
-						$yearScroll.scrollTop(scrollTop);
-					},
+					scrollInit,
 					updateCalendars = function (_year)
 					{
 						var text = '';
@@ -151,18 +210,21 @@
 							text += '</tr></table></div>';
 						}
 						$dates.html(text);
-						$this.find('.date-control_date').on('click', function ()
-						{
-							var $that = $(this);
-							day = parseInt($that.html(), 10);
-							month = $that.closest('.date-control_month').data('month') - 1;
-							var dateText = day + ' ' + monthsArr2[month] + ' ' + setterYear;
-							input.value = dateText;
-							$this.find('.date-control_date').removeClass('date-control_select-day').filter($that).addClass('date-control_select-day');
-							if (typeof params.changeDate == 'function') {
-								params.changeDate.call(input, year, month, day, dateText);
-							}
-						});
+						$this
+							.find('.date-control_date')
+							.on('click', function ()
+							{ // chose day
+								var $that = $(this),
+										dateText;
+								day = parseInt($that.html(), 10);
+								month = $that.closest('.date-control_month').data('month') - 1;
+								dateText = day + ' ' + monthsArr2[month] + ' ' + setterYear;
+								input.value = dateText;
+								$this.find('.date-control_date').removeClass('date-control_select-day').filter($that).addClass('date-control_select-day');
+								if (typeof params.changeDate == 'function') {
+									params.changeDate.call(input, year, month, day, dateText);
+								}
+							});
 						$dates.data('height', $dates.height() - $datesScroll.data('height') + 10); // i don't know where is this 10px
 						if ($dates.height() == 0) {
 							var timer = setInterval(function ()
@@ -187,12 +249,13 @@
 					isMonthsScroll = false,
 					initHeight = function ()
 					{
+						var datesHeight;
 						$monthPlane.data('height', $monthPlane.height());
 						$monthScroll.data('height', $monthScroll.height() - $monthPlane.height() - 2); // 2px for beautiful view
 						$yearScroll.data('height', $yearScroll.height() - $yearPlane.height() - 2);
 						$datesScroll.data('height', $datesScroll.height());
 						$dates.data('height', $dates.height() - $datesScroll.data('height') + 10); // i don't know where is this 10px
-						var datesHeight = parseInt($dates.height() / 2, 10);
+						datesHeight = parseInt($dates.height() / 2, 10);
 						$monthScrollSweep
 							.css({'height': datesHeight + 'px'})
 							.data('height', datesHeight - $monthScroll.height());
@@ -200,103 +263,185 @@
 							.css({'height': datesHeight + 'px'})
 							.data('height', datesHeight - $yearScroll.height());
 					};
+			cacheElements = {
+				month_plane: $monthPlane,
+				year_plane: $yearPlane
+			};
 			updateCalendars(year);
-			$datesScroll.on('scroll', function ()
-			{
-				var datesScroll = $datesScroll.scrollTop(),
-						datesHeight = $dates.data('height'),
-						factor = datesScroll / datesHeight,
-						monthsHeight = $monthScroll.data('height') * factor,
-						scrollTop = $monthScrollSweep.data('height') * factor;
-				$monthPlane.css({'top': parseInt(monthsHeight, 10) + 'px'});
-				if (!isMonthsScroll) {
-					isDatesScroll = true;
-					$monthScroll.scrollTop(scrollTop);
-				}
-				else {
-					isMonthsScroll = false;
-				}
-			});
-			$('body').on('mouseup', function ()
-			{
-				$monthScroll.data('moving', false);
-				$yearScroll.data('moving', false);
-			});
-			$monthScroll.on('scroll', function ()
-			{
-				if (!isDatesScroll) {
-					isMonthsScroll = true;
-					var monthsScroll = $monthScroll.scrollTop(),
-							monthsHeight = $monthScrollSweep.data('height'),
-							factor = Math.min(monthsScroll / monthsHeight, 1),
-							scrollTop = $dates.data('height') * factor;
-					$datesScroll.scrollTop(scrollTop);
-				}
-				else {
-					isDatesScroll = false;
-				}
-			})
-			.on('mousedown', function (e)
-			{
-				e = e || window.event;
-				var parentOffset = $(this).offset(),
-						relY = e.pageY - parentOffset.top - ($monthPlane.height() / 2),
-						factor = relY / ($monthScroll.data('height') + $monthPlane.height()),
-						scrollTop = factor * ($dates.data('height') + $datesScroll.data('height'));
-				$datesScroll.scrollTop(scrollTop);
-				$(this).data('moving', true);
-			})
-			.on('mousemove', function (e)
-			{
-				if ($(this).data('moving')) {
-					e = e || window.event;
-					var parentOffset = $(this).offset(),
-						relY = e.pageY - parentOffset.top - ($monthPlane.height() / 2),
-						factor = relY / ($monthScroll.data('height') + $monthPlane.height()),
-						scrollTop = factor * ($dates.data('height') + $datesScroll.data('height'));
-					$datesScroll.scrollTop(scrollTop);
-				}
-			});
-			$yearScroll.on('scroll', function ()
-			{
-				var yearsScroll = $yearScroll.scrollTop(),
-						yearsHeight = $yearScrollSweep.data('height'),
-						factor = yearsScroll / yearsHeight,
-						height = $yearScroll.data('height') * factor,
-						fullFactor = 1 / 11,
-						halfFactor = fullFactor / 2,
-						yearIndex = parseInt(((height / ($yearScroll.data('height'))) + halfFactor) / fullFactor, 10);
-				$yearPlane.css({'top': parseInt(height, 10) + 'px'});
-				if (yearsArr[yearIndex] != setterYear) {
-					if (typeof params.changeYear == 'function') {
-						params.changeYear.call(input, yearIndex);
+			var coordStart;
+			if (isTouchDevice) {
+				$([$dates, $monthPlane, $yearPlane]).each(function ()
+				{
+					$(this).css({
+						'-webkit-transition': '-webkit-transform 0s lenear',
+						   '-moz-transition': '-moz-transform 0s lenear',
+						    '-ms-transition': '-ms-transform 0s lenear',
+						     '-o-transition': '-o-transform 0s lenear',
+						        'transition': 'transform 0s lenear'
+					});
+				});
+				scrollInit = function ()
+				{ // before
+					console.log('scroll init');
+					$dates.data('top', 0);
+				};
+				$datesScroll
+					.on('touchstart', function (event)
+					{
+						var touches = event.originalEvent.touches;
+						if (touches.length == 1) { // if one finger
+							coordStart = touches[0].pageY;
+							event.preventDefault();
+						}
+					})
+					.on('touchmove', function (event)
+					{
+						var touches = event.originalEvent.touches;
+						if (touches.length == 1) { // if one finger
+							var datesScroll = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($dates.data('top'), 10);
+							setTop($dates, datesScroll);
+							var datesHeight = $dates.data('height'),
+									factor = datesScroll / -datesHeight,
+									monthsHeight = $monthScroll.data('height') * factor,
+									scrollTop = $monthScrollSweep.data('height') * factor;
+							setTop($monthPlane, parseInt(monthsHeight, 10));
+							event.preventDefault();
+						}
+					})
+					.on('touchend', function (event)
+					{
+						var touches = event.originalEvent.touches;
+						if (touches.length == 0) { // if one finger
+							$dates.data('top', event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($dates.data('top'), 10));
+						}
+					});
+				$monthScroll
+					.on('touchstart', function (event)
+					{
+						
+					})
+					.on('touchmove', function (event)
+					{
+
+					})
+					.on('touchend', function (event)
+					{
+
+					});
+			}
+			else {
+				scrollInit = function ()
+				{ // before
+					isScrollInit = true;
+					var fullFactor = 1 / 10,
+							halfFactor = fullFactor / 2,
+							factor = month * fullFactor - halfFactor,
+							scrollTop = $monthScrollSweep.data('height') * factor;
+					setScrollTop(cacheElements, $monthScroll, scrollTop);
+					fullFactor = 1 / 11;
+					factor = yearsArr.indexOf(year) * fullFactor;
+					scrollTop = $yearScrollSweep.data('height') * factor;
+					setScrollTop(cacheElements, $yearScroll, scrollTop);
+				};
+				$datesScroll.on('scroll', function ()
+				{
+					var datesScroll = getScrollTop($datesScroll),
+							datesHeight = $dates.data('height'),
+							factor = datesScroll / datesHeight,
+							monthsHeight = $monthScroll.data('height') * factor,
+							scrollTop = $monthScrollSweep.data('height') * factor;
+					$monthPlane.css({'top': parseInt(monthsHeight, 10) + 'px'});
+					if (!isMonthsScroll) {
+						isDatesScroll = true;
+						setScrollTop(cacheElements, $monthScroll, scrollTop);
 					}
-					year = yearsArr[yearIndex];
-					updateCalendars(year);
-					input.value = day + ' ' + monthsArr2[month] + ' ' + year;
-				}
-			})
-			.on('mousedown', function (e)
-			{
-				e = e || window.event;
-				var parentOffset = $(this).offset(),
-						relY = e.pageY - parentOffset.top - ($yearPlane.height() / 2),
-						factor = relY / ($yearScroll.data('height')),
-						scrollTop = factor * ($yearScrollSweep.data('height'));
-				$yearScroll.scrollTop(scrollTop);
-				$(this).data('moving', true);
-			})
-			.on('mousemove', function (e)
-			{
-				if ($(this).data('moving')) {
-					e = e || window.event;
-					var parentOffset = $(this).offset(),
-							relY = e.pageY - parentOffset.top - ($yearPlane.height() / 2),
-							factor = relY / ($yearScroll.data('height')),
-							scrollTop = factor * ($yearScrollSweep.data('height'));
-					$yearScroll.scrollTop(scrollTop);
-				}
-			});
+					else {
+						isMonthsScroll = false;
+					}
+				});
+				$('body').on('mouseup', function ()
+				{
+					$monthScroll.data('moving', false);
+					$yearScroll.data('moving', false);
+				});
+				$monthScroll
+					.on('scroll', function ()
+					{
+						if (!isDatesScroll) {
+							isMonthsScroll = true;
+							var monthsScroll = getScrollTop($monthScroll),
+									monthsHeight = $monthScrollSweep.data('height'),
+									factor = Math.min(monthsScroll / monthsHeight, 1),
+									scrollTop = $dates.data('height') * factor;
+							setScrollTop(cacheElements, $datesScroll, scrollTop);
+						}
+						else {
+							isDatesScroll = false;
+						}
+					})
+					.on('mousedown', function (e)
+					{
+						e = e || window.event;
+						var parentOffset = $(this).offset(),
+								relY = e.pageY - parentOffset.top - ($monthPlane.height() / 2),
+								factor = relY / ($monthScroll.data('height') + $monthPlane.height()),
+								scrollTop = factor * ($dates.data('height') + $datesScroll.data('height'));
+						setScrollTop(cacheElements, $datesScroll, scrollTop);
+						$(this).data('moving', true);
+					})
+					.on('mousemove', function (e)
+					{
+						if ($(this).data('moving')) {
+							e = e || window.event;
+							var parentOffset = $(this).offset(),
+									relY = e.pageY - parentOffset.top - ($monthPlane.height() / 2),
+									factor = relY / ($monthScroll.data('height') + $monthPlane.height()),
+									scrollTop = factor * ($dates.data('height') + $datesScroll.data('height'));
+							setScrollTop(cacheElements, $datesScroll, scrollTop);
+						}
+					});
+				$yearScroll
+					.on('scroll', function ()
+					{
+						var yearsScroll = getScrollTop($yearScroll),
+								yearsHeight = $yearScrollSweep.data('height'),
+								factor = yearsScroll / yearsHeight,
+								height = $yearScroll.data('height') * factor,
+								fullFactor = 1 / 11,
+								halfFactor = fullFactor / 2,
+								yearIndex = parseInt(((height / ($yearScroll.data('height'))) + halfFactor) / fullFactor, 10);
+						$yearPlane.css({'top': parseInt(height, 10) + 'px'});
+						if (yearsArr[yearIndex] != setterYear) {
+							if (typeof params.changeYear == 'function') {
+								params.changeYear.call(input, yearIndex);
+							}
+							year = yearsArr[yearIndex];
+							updateCalendars(year);
+							input.value = day + ' ' + monthsArr2[month] + ' ' + year;
+						}
+					})
+					.on('mousedown', function (e)
+					{
+						e = e || window.event;
+						var parentOffset = $(this).offset(),
+								relY = e.pageY - parentOffset.top - ($yearPlane.height() / 2),
+								factor = relY / ($yearScroll.data('height')),
+								scrollTop = factor * ($yearScrollSweep.data('height'));
+						setScrollTop(cacheElements, $yearScroll, scrollTop);
+						$(this).data('moving', true);
+					})
+					.on('mousemove', function (e)
+					{
+						if ($(this).data('moving')) {
+							e = e || window.event;
+							var parentOffset = $(this).offset(),
+									relY = e.pageY - parentOffset.top - ($yearPlane.height() / 2),
+									factor = relY / ($yearScroll.data('height')),
+									scrollTop = factor * ($yearScrollSweep.data('height'));
+							setScrollTop(cacheElements, $yearScroll, scrollTop);
+						}
+					});
+			}
 			return this;
 		});
 	};
