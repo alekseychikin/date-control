@@ -33,4 +33,4 @@ $('.input-date-control').dateControl({
     // параметры такие же
   }
 });
-
+```

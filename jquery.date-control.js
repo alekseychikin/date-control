@@ -65,28 +65,50 @@
 			setTop;
 	if (isTouchDevice) {
 		if (supportsTransitions) {
-			setTop = function ($element, value)
+			setTop = function ($element, value, returnTime)
 			{
 // transform: translate3d(top, left, rotate)
 // transition: transform 0s lenear;
-				$element.css({
-					'-webkit-transform': 'translate3d(0,' + value + 'px,0)',
-					   '-moz-transform': 'translate3d(0,' + value + 'px,0)',
-					    '-ms-transform': 'translate3d(0,' + value + 'px,0)',
-					     '-o-transform': 'translate3d(0,' + value + 'px,0)',
-					        'transform': 'translate3d(0,' + value + 'px,0)',
-					'-webkit-transition': '-webkit-transform 2s lenear',
-					   '-moz-transition': '-moz-transform 2s lenear',
-					    '-ms-transition': '-ms-transform 2s lenear',
-					     '-o-transition': '-o-transform 2s lenear',
-					        'transition': 'transform 2s lenear'
-				});
+				if (returnTime) {
+					returnTime = returnTime / 1000;
+					$element.css({
+						'-webkit-transform': 'translate(0px,' + value + 'px)',
+						   '-moz-transform': 'translate(0px,' + value + 'px)',
+						    '-ms-transform': 'translate(0px,' + value + 'px)',
+						     '-o-transform': 'translate(0px,' + value + 'px)',
+						        'transform': 'translate(0px,' + value + 'px)',
+						'-webkit-transition': '-webkit-transform ' + returnTime + 's ease-out',
+						   '-moz-transition': '-moz-transform ' + returnTime + 's ease-out',
+						    '-ms-transition': '-ms-transform ' + returnTime + 's ease-out',
+						     '-o-transition': '-o-transform ' + returnTime + 's ease-out',
+						        'transition': 'transform ' + returnTime + 's ease-out'
+					});
+				}
+				else {
+					$element.css({
+						'-webkit-transform': 'translate(0px,' + value + 'px)',
+						   '-moz-transform': 'translate(0px,' + value + 'px)',
+						    '-ms-transform': 'translate(0px,' + value + 'px)',
+						     '-o-transform': 'translate(0px,' + value + 'px)',
+						        'transform': 'translate(0px,' + value + 'px)',
+						'-webkit-transition': '-webkit-transform 0s linear',
+						   '-moz-transition': '-moz-transform 0s linear',
+						    '-ms-transition': '-ms-transform 0s linear',
+						     '-o-transition': '-o-transform 0s linear',
+						        'transition': 'transform 0s linear'
+					});
+				}
 			};
 		}
 		else {
-			setTop = function ($element, value)
+			setTop = function ($element, value, returnTime)
 			{
-				$element.css({top: value + 'px'});
+				if (returnTime) {
+					$element.animate({top: value + 'px'}, returnTime);
+				}
+				else {
+					$element.css({top: value + 'px'});
+				}
 			}
 		}
 		setScrollTop = function (cacheElements, $element, value)
@@ -95,7 +117,7 @@
 		};
 		getScrollTop = function ($element)
 		{
-			console.log($element);
+//			console.log($element);
 			return 0;
 		};
 	}
@@ -190,19 +212,27 @@
 							date = new Date(setterYear, i - 1, 1);
 							startWeek = date.getDay() || 7;
 							dayCount = getDaysInMonth(i - 1, setterYear);
-							text +=
-								'<div class="date-control_month" data-month="' + i + '"><div class="date-control_month_label' + (startWeek > 3 ? ' date-control_month_label_drop-down' : '') + '">' + monthsArr[i - 1] + '</div><table class="date-control_dates_data_table"><tr>';
+							text += '<div class="date-control_month" data-month="' + i +
+							        '"><div class="date-control_month_label' +
+											(startWeek > 3 ? ' date-control_month_label_drop-down' : '') +
+											'">' + monthsArr[i - 1] +
+											'</div><table class="date-control_dates_data_table"><tr>';
 							days = 1;
 							for (j = 1; j < startWeek; j += 1) {
 								text += '<td class="date-control_empty"></td>';
 							}
 							for (j = startWeek; j <= 7; j += 1, days += 1) {
-								text += '<td class="date-control_date' + (j > 5 ? ' date-control_holiday' : '') + (i -1 == month && days == day ? ' date-control_select-day' : '') + '">' + days + '</td>';
+								text += '<td class="date-control_date' +
+								        (j > 5 ? ' date-control_holiday' : '') +
+												(i -1 == month && days == day ? ' date-control_select-day' : '') +
+												'">' + days + '</td>';
 							}
 							text += '</tr><tr>';
 							for (j = 1; days <= dayCount; days += 1, j += 1) {
-								text +=
-									'<td class="date-control_date' + (!(j % 7) || !((j + 1) % 7) ? ' date-control_holiday' : '') + (i -1 == month && days == day ? ' date-control_select-day' : '') + '">' + days + '</td>';
+								text += '<td class="date-control_date' +
+								        (!(j % 7) || !((j + 1) % 7) ? ' date-control_holiday' : '') +
+												(i -1 == month && days == day ? ' date-control_select-day' : '') +
+												'">' + days + '</td>';
 								if (j % 7 == 0) {
 									text += '</tr><tr>';
 								}
@@ -220,7 +250,11 @@
 								month = $that.closest('.date-control_month').data('month') - 1;
 								dateText = day + ' ' + monthsArr2[month] + ' ' + setterYear;
 								input.value = dateText;
-								$this.find('.date-control_date').removeClass('date-control_select-day').filter($that).addClass('date-control_select-day');
+								$this
+									.find('.date-control_date')
+									.removeClass('date-control_select-day')
+									.filter($that)
+									.addClass('date-control_select-day');
 								if (typeof params.changeDate == 'function') {
 									params.changeDate.call(input, year, month, day, dateText);
 								}
@@ -270,41 +304,61 @@
 			updateCalendars(year);
 			var coordStart;
 			if (isTouchDevice) {
-				$([$dates, $monthPlane, $yearPlane]).each(function ()
-				{
-					$(this).css({
-						'-webkit-transition': '-webkit-transform 0s lenear',
-						   '-moz-transition': '-moz-transform 0s lenear',
-						    '-ms-transition': '-ms-transform 0s lenear',
-						     '-o-transition': '-o-transform 0s lenear',
-						        'transition': 'transform 0s lenear'
-					});
-				});
 				scrollInit = function ()
 				{ // before
-					console.log('scroll init');
-					$dates.data('top', 0);
+
+					isScrollInit = true;
+					var fullFactor = 1 / 10,
+							halfFactor = fullFactor / 2,
+							factor = month * fullFactor - halfFactor,
+							scrollTop = parseInt($monthScroll.data('height') * factor, 10);
+					setTop($monthPlane, scrollTop);
+					$monthPlane.data('top', scrollTop);
+					scrollTop = parseInt($dates.data('height') * factor, 10);
+					setTop($dates, -scrollTop);
+					$dates.data('top', -scrollTop);
+					fullFactor = 1 / 11;
+					factor = yearsArr.indexOf(year) * fullFactor;
+					scrollTop = parseInt($yearScroll.data('height') * factor, 10);
+					setTop($yearPlane, scrollTop);
+					$yearPlane.data('top', scrollTop);
 				};
+				setTimeout(function ()
+				{
+//					setTop($dates, -100);
+				}, 3000);
 				$datesScroll
 					.on('touchstart', function (event)
 					{
 						var touches = event.originalEvent.touches;
 						if (touches.length == 1) { // if one finger
 							coordStart = touches[0].pageY;
-							event.preventDefault();
 						}
 					})
 					.on('touchmove', function (event)
 					{
 						var touches = event.originalEvent.touches;
 						if (touches.length == 1) { // if one finger
-							var datesScroll = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($dates.data('top'), 10);
-							setTop($dates, datesScroll);
-							var datesHeight = $dates.data('height'),
+							var datesScroll = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($dates.data('top'), 10),
+									datesHeight = $dates.data('height'),
 									factor = datesScroll / -datesHeight,
-									monthsHeight = $monthScroll.data('height') * factor,
-									scrollTop = $monthScrollSweep.data('height') * factor;
-							setTop($monthPlane, parseInt(monthsHeight, 10));
+									monthsTop = parseInt($monthScroll.data('height') * factor),
+									monthsHeight = $monthScroll.data('height');
+							if (datesScroll > 0) {
+								datesScroll = parseInt(Math.sqrt(datesScroll * 3), 10);
+							}
+							if (-datesScroll > datesHeight) {
+								datesScroll = parseInt(-datesHeight - Math.sqrt((datesHeight + datesScroll) * -3), 10);
+							}
+							setTop($dates, datesScroll);
+							if (monthsTop < 0) {
+								monthsTop = 0
+							}
+							else if (monthsTop > monthsHeight) {
+								monthsTop = monthsHeight;
+							}
+							$monthPlane.data('top', monthsTop);
+							setTop($monthPlane, monthsTop);
 							event.preventDefault();
 						}
 					})
@@ -312,21 +366,72 @@
 					{
 						var touches = event.originalEvent.touches;
 						if (touches.length == 0) { // if one finger
-							$dates.data('top', event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($dates.data('top'), 10));
+							var datesScroll = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($dates.data('top'), 10);
+							var datesHeight = $dates.data('height');
+							if (datesScroll > 0) {
+								datesScroll = 0;
+								setTop($dates, datesScroll, 200);
+							}
+							else if (-datesScroll > datesHeight) {
+								datesScroll = -datesHeight;
+								setTop($dates, datesScroll, 200);
+							}
+							else {
+								setTop($dates, datesScroll);
+							}
+							$dates.data('top', datesScroll);
 						}
 					});
 				$monthScroll
 					.on('touchstart', function (event)
 					{
-						
+						var touches = event.originalEvent.touches;
+						if (touches.length == 1) { // if one finger
+							coordStart = touches[0].pageY;
+						}
 					})
 					.on('touchmove', function (event)
 					{
-
+						var touches = event.originalEvent.touches;
+						if (touches.length == 1) { // if one finger
+							var monthsTop = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($monthPlane.data('top'), 10),
+									monthsHeight = $monthScroll.data('height'),
+									factor = monthsTop / monthsHeight,
+									datesHeight = $dates.data('height'),
+									datesTop = -parseInt(datesHeight * factor);
+							if (monthsTop < 0) {
+								monthsTop = 0;
+							}
+							else if (monthsTop > monthsHeight) {
+								monthsTop = monthsHeight;
+							}
+							if (datesTop > 0) {
+								datesTop = 0
+							}
+							else if (datesTop < -datesHeight) {
+								datesTop = -datesHeight;
+							}
+							// $monthPlane.data('top', monthsTop);
+							setTop($monthPlane, monthsTop);
+							setTop($dates, datesTop);
+							$dates.data('top', datesTop);
+							event.preventDefault();
+						}
 					})
 					.on('touchend', function (event)
 					{
-
+						var touches = event.originalEvent.touches;
+						if (touches.length == 0) { // if one finger
+							var monthsTop = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($monthPlane.data('top'), 10),
+									monthsHeight = $monthScroll.data('height');
+							if (monthsTop < 0) {
+								monthsTop = 0;
+							}
+							else if (monthsTop > monthsHeight) {
+								monthsTop = monthsHeight;
+							}
+							$monthPlane.data('top', monthsTop);
+						}
 					});
 			}
 			else {
