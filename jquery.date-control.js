@@ -261,8 +261,9 @@
 					{
 						var datesHeight;
 						$monthPlane.data('height', $monthPlane.height());
-						$monthScroll.data('height', $monthScroll.height() - $monthPlane.height() - 2); // 2px for beautiful view
-						$yearScroll.data('height', $yearScroll.height() - $yearPlane.height() - 2);
+						$yearPlane.data('height', $yearPlane.height());
+						$monthScroll.data('height', $monthScroll.height() - $monthPlane.data('height') - 2); // 2px for beautiful view
+						$yearScroll.data('height', $yearScroll.height() - $yearPlane.data('height') - 2);
 						$datesScroll.data('height', $datesScroll.height());
 						$dates.data('height', $dates.height() - $datesScroll.data('height') + 10); // i don't know where is this 10px
 						datesHeight = parseInt($dates.height() / 2, 10);
@@ -378,7 +379,7 @@
 								monthsTop = monthsHeight;
 							}
 							if (datesTop > 0) {
-								datesTop = 0
+								datesTop = 0;
 							}
 							else if (datesTop < -datesHeight) {
 								datesTop = -datesHeight;
@@ -403,6 +404,19 @@
 							}
 							$monthPlane.data('top', monthsTop);
 						}
+					})
+					.on('click', function (event)
+					{
+						var parentOffset = $(this).offset(),
+								monthTop = parseInt(event.pageY - parentOffset.top - ($monthPlane.data('height') / 2), 10),
+								monthsHeight = $monthScroll.data('height'),
+								factor = monthTop / monthsHeight,
+								datesHeight = $dates.data('height'),
+								datesTop = -parseInt(datesHeight * factor);
+						setTop($monthPlane, monthTop);
+						$monthPlane.data('top', monthTop);
+						setTop($dates, datesTop);
+						$dates.data('top', datesTop);
 					});
 				$yearScroll
 					.on('touchstart', function (event)
@@ -452,6 +466,28 @@
 							yearsTop = yearsHeight;
 						}
 						$yearPlane.data('top', yearsTop);
+					})
+					.on('click', function (event)
+					{
+						var parentOffset = $(this).offset(),
+								yearsTop = parseInt(event.pageY - parentOffset.top - ($yearPlane.data('height') / 2), 10),
+								yearsHeight = $yearScroll.data('height'),
+								factor = yearsTop / yearsHeight,
+								height = $yearScroll.data('height') * factor,
+								fullFactor = 1 / 11,
+								halfFactor = fullFactor / 2,
+								yearIndex = parseInt(((height / yearsHeight) + halfFactor) / fullFactor, 10);
+						setTop($yearPlane, yearsTop);
+						$yearPlane.data('top', yearsTop);
+						if (yearsArr[yearIndex] != setterYear) {
+							if (typeof params.changeYear == 'function') {
+								params.changeYear.call(input, yearIndex);
+							}
+							year = yearsArr[yearIndex];
+							updateCalendars(year);
+							input.value = day + ' ' + monthsArr2[month] + ' ' + year;
+						}
+						event.preventDefault();
 					});
 			}
 			else {
@@ -508,8 +544,8 @@
 					{
 						e = e || window.event;
 						var parentOffset = $(this).offset(),
-								relY = e.pageY - parentOffset.top - ($monthPlane.height() / 2),
-								factor = relY / ($monthScroll.data('height') + $monthPlane.height()),
+								relY = e.pageY - parentOffset.top - ($monthPlane.data('height') / 2),
+								factor = relY / ($monthScroll.data('height') + $monthPlane.data('height')),
 								scrollTop = factor * ($dates.data('height') + $datesScroll.data('height'));
 						$datesScroll.scrollTop(scrollTop);
 						$(this).data('moving', true);
@@ -519,8 +555,8 @@
 						if ($(this).data('moving')) {
 							e = e || window.event;
 							var parentOffset = $(this).offset(),
-									relY = e.pageY - parentOffset.top - ($monthPlane.height() / 2),
-									factor = relY / ($monthScroll.data('height') + $monthPlane.height()),
+									relY = e.pageY - parentOffset.top - ($monthPlane.data('height') / 2),
+									factor = relY / ($monthScroll.data('height') + $monthPlane.data('height')),
 									scrollTop = factor * ($dates.data('height') + $datesScroll.data('height'));
 							$datesScroll.scrollTop(scrollTop);
 						}
@@ -549,7 +585,7 @@
 					{
 						e = e || window.event;
 						var parentOffset = $(this).offset(),
-								relY = e.pageY - parentOffset.top - ($yearPlane.height() / 2),
+								relY = e.pageY - parentOffset.top - ($yearPlane.data('height') / 2),
 								factor = relY / ($yearScroll.data('height')),
 								scrollTop = factor * ($yearScrollSweep.data('height'));
 						$yearScroll.scrollTop(scrollTop);
@@ -560,7 +596,7 @@
 						if ($(this).data('moving')) {
 							e = e || window.event;
 							var parentOffset = $(this).offset(),
-									relY = e.pageY - parentOffset.top - ($yearPlane.height() / 2),
+									relY = e.pageY - parentOffset.top - ($yearPlane.data('height') / 2),
 									factor = relY / ($yearScroll.data('height')),
 									scrollTop = factor * ($yearScrollSweep.data('height'));
 							$yearScroll.scrollTop(scrollTop);
