@@ -150,7 +150,7 @@
 					monthsArr = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'],
 					monthsArr2 = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
 					monthsShortArr = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'],
-					yearsArr = [2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
+					yearsArr = [2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
 					$monthsList = $this.find('.date-control_months_list'),
 					$yearsList = $this.find('.date-control_years_list'),
 					isScrollInit = false,
@@ -411,7 +411,6 @@
 							else if (datesTop < -datesHeight) {
 								datesTop = -datesHeight;
 							}
-							// $monthPlane.data('top', monthsTop);
 							setTop($monthPlane, monthsTop);
 							setTop($dates, datesTop);
 							$dates.data('top', datesTop);
@@ -432,6 +431,56 @@
 							}
 							$monthPlane.data('top', monthsTop);
 						}
+					});
+				$yearScroll
+					.on('touchstart', function (event)
+					{
+						var touches = event.originalEvent.touches;
+						if (touches.length == 1) { // if one finger
+							coordStart = touches[0].pageY;
+						}
+					})
+					.on('touchmove', function (event)
+					{
+						var touches = event.originalEvent.touches;
+						if (touches.length == 1) { // if one finger
+							var yearsTop = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($yearPlane.data('top'), 10),
+									yearsHeight = $yearScroll.data('height'),
+									factor = yearsTop / yearsHeight,
+									height = $yearScroll.data('height') * factor,
+									fullFactor = 1 / 11,
+									halfFactor = fullFactor / 2,
+									yearIndex = parseInt(((height / yearsHeight) + halfFactor) / fullFactor, 10);
+							if (yearsTop < 0) {
+								yearsTop = 0
+							}
+							else if (yearsTop > yearsHeight) {
+								yearsTop = yearsHeight;
+							}
+							setTop($yearPlane, yearsTop);
+							if (yearsArr[yearIndex] != setterYear) {
+								if (typeof params.changeYear == 'function') {
+									params.changeYear.call(input, yearIndex);
+								}
+								year = yearsArr[yearIndex];
+								updateCalendars(year);
+								input.value = day + ' ' + monthsArr2[month] + ' ' + year;
+							}
+							// console.log(yearsTop);
+							event.preventDefault();
+						}
+					})
+					.on('touchend', function (event)
+					{
+						var yearsTop = event.originalEvent.changedTouches[0].pageY - coordStart + parseInt($yearPlane.data('top'), 10),
+								yearsHeight = $yearScroll.data('height');
+						if (yearsTop < 0) {
+							yearsTop = 0
+						}
+						else if (yearsTop > yearsHeight) {
+							yearsTop = yearsHeight;
+						}
+						$yearPlane.data('top', yearsTop);
 					});
 			}
 			else {
