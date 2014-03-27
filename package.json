@@ -1,0 +1,44 @@
+{
+  "name": "grunt-include-js",
+  "description": "Includes javascript-files between <!--Scripts--><!--/Scripts--> at templates",
+  "version": "1.0.1",
+  "homepage": "https://github.com/makingoff/include-js",
+  "author": {
+    "name": "makingoff",
+    "email": "mail@makingoff.name",
+    "url": "http://makingoff.name/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/makingoff/include-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/makingoff/include-js/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/makingoff/include-js/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "Gruntfile.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt": "~0.4.4",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-copy": "^0.5.0"
+  },
+  "peerDependencies": {
+    "grunt": "~0.4.4"
+  },
+  "keywords": [
+    "include javascript"
+  ]
+}
